@@ -10,3 +10,21 @@ Automatize the working hours in Timecamp
 
 If you want to set a normal workday from 9 to 13 and 14 to 18, just press "OK.
 If not, type NO and fill the required information.
+
+
+## Instructions for `default.py`
+
+1. Create a .env file in the top directory containing:
+```
+API_TOKEN = "here your api token"
+TASK_JORNADA_LABORAL = "here the task id"
+```
+2. Install the requirements
+```
+pip install -r requirements.txt
+```
+3. Execute the script for the initial and end dates to submit (both included). This will create a 4h task in the 
+   morining plus 4h in the afternoon. Example:
+```
+python default.py 2021-02-08 2021-02-12
+```
