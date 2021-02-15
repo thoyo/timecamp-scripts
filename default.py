@@ -1,20 +1,44 @@
+import sys
+import os
+import datetime as dt
+
+from dotenv import load_dotenv
 import requests
 
-api_token = "ADD_HERE_YOUR_API_TOKEN"
-task_jornada_laboral = "ADD_HERE_YOUR_DESIRED_TASK_ID"
 
-# Example for GET time-entry request
-#response = requests.get(f"https://www.timecamp.com/third_party/api/users/format/json/api_token/{api_token}")
+load_dotenv()
+API_TOKEN = os.getenv("API_TOKEN")
+TASK_JORNADA_LABORAL = os.getenv("TASK_JORNADA_LABORAL")
 
-data = {
-    'date': '2019-10-28',
-    'duration': '3600',
-    'start_time': '10:30:00',
-    'end_time': '11:30:00',
-    'task_id': task_jornada_laboral
-}
+DATETIME_FORMAT = "%Y-%m-%d"
+SECONDS_IN_HOUR = 3600
+TIME_SLOTS = [
+    ['09:00:00', '13:00:00'],
+    ['14:00:00', '18:00:00'],
+]
 
-# Example for POST time-entry request
-response = requests.post(f"https://app.timecamp.com/third_party/api/entries/format/json/api_token/{api_token}", json = data)
 
-print (response.json())
+def main(ini, fin):
+    curr = ini
+    while curr <= fin:
+        for slot in TIME_SLOTS:
+            data = {
+                'date': dt.datetime.strftime(curr, DATETIME_FORMAT),
+                'duration': str(4*SECONDS_IN_HOUR),
+                'start_time': slot[0],
+                'end_time': slot[1],
+                'task_id': TASK_JORNADA_LABORAL
+            }
+
+            # POST time-entry request
+            response = requests.post(f"https://app.timecamp.com/third_party/api/entries/format/json/api_token/{API_TOKEN}",
+                                     json=data)
+
+            print(response.json())
+        curr += dt.timedelta(days=1)
+
+
+if __name__ == "__main__":
+    ini = dt.datetime.strptime(sys.argv[1], DATETIME_FORMAT)
+    fin = dt.datetime.strptime(sys.argv[2], DATETIME_FORMAT)
+    main(ini, fin)
